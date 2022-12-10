@@ -9,6 +9,20 @@ using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumTests
 {
+
+    public static class WebDriverExtensions
+    {
+        public static IWebElement FindElement(this IWebDriver driver, By by, int timeoutInSeconds)
+        {
+            if (timeoutInSeconds > 0)
+            {
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutInSeconds));
+                return wait.Until(drv => drv.FindElement(by));
+            }
+            return driver.FindElement(by);
+        }
+    }
+
     [TestFixture]
     public class AddToCart
     {
@@ -43,6 +57,14 @@ namespace SeleniumTests
         public void TheAddToCartTest()
         {
             driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
+            driver.FindElement(By.LinkText("Log in")).Click();
+            driver.FindElement(By.Id("Email")).Clear();
+            driver.FindElement(By.Id("Email")).SendKeys("jjuric@gmail.com");
+            driver.FindElement(By.Id("Password")).Clear();
+            driver.FindElement(By.Id("Password")).SendKeys("password12");
+            driver.FindElement(By.XPath("//input[@value='Log in']")).Click();
+            driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
+            while (!IsElementPresent(By.XPath("//div[3]/div/div[2]/div[3]/div[2]/input")));
             driver.FindElement(By.XPath("//div[3]/div/div[2]/div[3]/div[2]/input")).Click();
             driver.FindElement(By.XPath("//li[@id='topcartlink']/a")).Click();
         }
